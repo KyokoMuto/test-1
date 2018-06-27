@@ -1,0 +1,90 @@
+def radix(S,SA,ISA):
+    n=len(S)
+    m=0
+    for i in range(len(S)):
+        if m<S[i]:
+            m=S[i]
+    m+=1
+    count=[0 for i in range(n)]
+    SA=[0 for i in range(n)]
+    ISA=[0 for i in range(n)]
+    for i in range(n):
+        count[S[i]]+=1
+    for i in range(0,m):
+        count[i]+=count[i-1]
+    for i in range(n-1,-1,-1):
+        ISA[i]=count[S[i]]-1
+    for i in range(n-1,-1,-1):
+        SA[count[S[i]]-1]=i
+        count[S[i]]-=1
+    return SA,ISA
+print(radix([0,3,0,0,3,0,1,2,0,3,0,0,3,0,0,-1],[],[]))              
+#print(radix('ATAATACGATAATAA','',''))
+
+import random
+
+def quicksort(SA,l,r,ISA,h):
+    if l>r:
+        return
+    if l==r:
+        ISA[SA[l]]=l
+    print(random.randint(l,r))
+    v=ISA[SA[l+random.randint(l,r)]+h]
+    i=l
+    mi=l
+    j=r
+    mj=r
+    while True:
+        while True:
+            if i<=j and ISA[SA[i]+h]<=v:
+                if ISA[SA[i]+h]==v:
+                    SA[i],SA[mi]=SA[mi],SA[i]
+                i+=1
+            else:
+                break
+        while True:
+            if i<=j and ISA[SA[i]+h]>=v:
+                if ISA[SA[i]+h]==v:
+                    SA[i],SA[mi]=SA[mi],SA[i] 
+                j-=1
+            else:
+                break
+        if i>j:
+            break
+        SA[i],SA[j]=SA[j],SA[i]
+    while True:
+        if l<=mi:
+            SA[i],SA[mi]=SA[mi],SA[i]
+            i-=1
+            mi-=1
+        else:
+            break
+    while True:
+        if mj<=r:
+            SA[j],SA[mj]=SA[mj],SA[j]
+            j+=1
+            mj+=1
+    quicksort(SA,l,i,ISA,h)
+    for k in range(i+1,j):
+        ISA[SA[k]]=j-1
+    quicksort(SA,j,r,ISA,h)
+    
+ def suffix(S):
+    n=len(S)
+    SA=[]
+    ISA=[]
+    (SA,ISA)=radix(S,SA,ISA)
+    h=1
+    while True:
+        iteration=False
+        print(S)
+        for j in range(n):
+            next=ISA[SA[j]]+1
+            if j<ISA[SA[j]]:
+                quicksort(SA,j,ISA[SA[j]],ISA,h)
+                iteration=True
+        h=2*h
+        if iteration!=True:
+            break
+    return SA
+print(suffix([0,3,0,0,3,0,1,2,0,3,0,0,3,0,0,-1]))
